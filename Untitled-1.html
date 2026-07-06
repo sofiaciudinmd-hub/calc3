@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Preturi</title>
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        max-width: 500px;
+        margin: auto;
+        padding: 20px;
+        text-align: center;
+        font-size: 22px;
+    }
+
+    h2 {
+        font-size: 32px;
+        margin-bottom: 15px;
+    }
+
+    .top {
+        text-align: left;
+        margin-bottom: 20px;
+        font-size: 20px;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 10px;
+    }
+
+    input {
+        width: 100%;
+        font-size: 30px;
+        padding: 15px;
+        text-align: right;
+        box-sizing: border-box;
+        margin-bottom: 20px;
+    }
+
+    .numpad {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+
+    .numpad button {
+        font-size: 30px;
+        padding: 20px;
+    }
+
+    .procente {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+
+    .procBtn {
+        font-size: 22px;
+        padding: 15px;
+    }
+
+    .procBtn.activ {
+        background-color: #007AFF;
+        color: white;
+    }
+
+    h3 {
+        font-size: 24px;
+        text-align: left;
+    }
+</style>
+</head>
+<body>
+
+<h2>Preturi</h2>
+
+<div class="top">
+    <div><b>Pret net:</b> <span id="topNet">0</span></div>
+    <div><b>Comision:</b> <span id="topComision">0</span></div>
+    <div><b>Pret brut:</b> <span id="topBrut">0</span></div>
+</div>
+
+<input type="text" id="nr" readonly placeholder="0">
+
+<div class="numpad">
+    <button onclick="adauga('1')">1</button>
+    <button onclick="adauga('2')">2</button>
+    <button onclick="adauga('3')">3</button>
+
+    <button onclick="adauga('4')">4</button>
+    <button onclick="adauga('5')">5</button>
+    <button onclick="adauga('6')">6</button>
+
+    <button onclick="adauga('7')">7</button>
+    <button onclick="adauga('8')">8</button>
+    <button onclick="adauga('9')">9</button>
+
+    <button onclick="stergeUltimul()">⌫</button>
+    <button onclick="adauga('0')">0</button>
+    <button onclick="stergeTot()">C</button>
+</div>
+
+<div class="procente">
+    <button class="procBtn" onclick="selecteazaProcent(this, 10.5)">10,5%</button>
+    <button class="procBtn" onclick="selecteazaProcent(this, 11)">11%</button>
+    <button class="procBtn" onclick="selecteazaProcent(this, 11.5)">11,5%</button>
+    <button class="procBtn" onclick="selecteazaProcent(this, 12)">12%</button>
+</div>
+
+<script>
+let procentSelectat = null;
+
+function adauga(cifra) {
+    document.getElementById("nr").value += cifra;
+
+    if (procentSelectat !== null)
+        calculeaza();
+}
+
+function stergeUltimul() {
+    let x = document.getElementById("nr");
+    x.value = x.value.slice(0, -1);
+
+    if (procentSelectat !== null)
+        calculeaza();
+}
+
+function stergeTot() {
+    document.getElementById("nr").value = "";
+
+    document.getElementById("topNet").innerText = "0";
+    document.getElementById("topComision").innerText = "0";
+    document.getElementById("topBrut").innerText = "0";
+}
+
+function selecteazaProcent(buton, procent) {
+    procentSelectat = procent;
+
+    document.querySelectorAll(".procBtn")
+        .forEach(b => b.classList.remove("activ"));
+
+    buton.classList.add("activ");
+
+    calculeaza();
+}
+
+function calculeaza() {
+    let nr = parseFloat(document.getElementById("nr").value);
+
+    if (isNaN(nr) || procentSelectat === null)
+        return;
+
+    let pretNet = nr - nr * (procentSelectat / 100);
+
+    let comision = 0;
+
+    if (pretNet <= 599)
+        comision = 50;
+    else if (pretNet <= 699)
+        comision = 60;
+    else if (pretNet <= 799)
+        comision = 70;
+    else if (pretNet <= 999)
+        comision = 80;
+    else if (pretNet <= 1999)
+        comision = 90;
+    else if (pretNet <= 3999)
+        comision = 100;
+    else if (pretNet <= 5999)
+        comision = 150;
+    else if (pretNet < 7499)
+        comision = 200;
+    else
+        comision = 250;
+
+    let pretBrut = pretNet + comision;
+
+    document.getElementById("topNet").innerText = Math.round(pretNet);
+    document.getElementById("topComision").innerText = comision;
+    document.getElementById("topBrut").innerText = Math.round(pretBrut);
+}
+</script>
+
+</body>
+</html>
